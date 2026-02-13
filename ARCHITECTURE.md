@@ -26,7 +26,7 @@ This is a **sanitized** technical overview of the system built for the Colosseum
 │                    SENTRY EXECUTION LAYER (private)                 │
 │                                                                     │
 │  - Agent registration + auth                                        │
-│  - Strategy runner (arb + ecdysis)                                  │
+│  - Strategy runner (arb + EE-16 ecdysis)                            │
 │  - Routing + fallback handling                                      │
 │  - Confirmation/reliability handling                                │
 │  - Persistence + telemetry                                          │
@@ -84,10 +84,21 @@ When direct TOKEN/SOL price diverges from implied TOKEN→SENTRY→SOL, triangul
 - executes a multi-leg swap route
 - fully realizes PnL each cycle (no directional inventory required)
 
-### B) Ecdysis Engine (EE‑8)
-- proprietary sentiment-based strategy
-- uses price/candle history and a composite signal
-- internals are intentionally withheld
+### B) Ecdysis Engine EE-16 (evolved from EE-8)
+- Proprietary 16-indicator sentiment ensemble (evolved from the 8-indicator EE-8 prototype through live mainnet iteration)
+- Uses 5-minute OHLCV candles built from Jupiter + Helius real-time data
+- 16 independent indicators vote BUY/SELL/NEUTRAL across 10 Solana assets
+- Generates autonomous trading signals — the first molt (EE-8 → EE-16)
+- Internals are intentionally withheld
+
+### C) Signal SaaS Microservice
+- Standalone service designed by Molty, deployed on Railway
+- Price indexer polls Jupiter/Helius every 60s → builds 5m OHLCV candles
+- EE-16 engine consumes candles and generates BUY/SELL signals
+- Public REST API serves TradingView-compatible candle data for 10 tokens
+- Gated signal API with USDC subscription payments (Helius webhook verification)
+- Persistent PostgreSQL for candle history, signals, subscriptions
+- Powers the live Moltiverse Dashboard at sentry.trading/moltiverse
 
 See: `docs/STRATEGY_OVERVIEW.md`
 
@@ -119,7 +130,7 @@ This is what makes it an **economy**, not just bots trading.
 │       │ volume & parity            │ price action                 │
 │       ▼                            ▼                             │
 │  ┌───────────────┐           ┌───────────────┐                   │
-│  │ CONNECTED      │           │  EE‑8         │                   │
+│  │ CONNECTED      │           │  EE-16        │                   │
 │  │ LIQUIDITY GRAPH│           │  STRATEGY     │                   │
 │  └───────┬───────┘           └───────┬───────┘                   │
 │          │                            │                           │
