@@ -303,6 +303,119 @@ export async function withdrawFunds(options: {
 }
 
 // -------------------------
+// SSaaS — Sentiment Signals as a Service
+// -------------------------
+
+export type SSaaSSignal = {
+    signalId: string;
+    symbol: string;
+    action: 'BUY' | 'SELL' | 'HOLD';
+    strength: number;     // 0–100
+    ts: string;
+    expiresAt: string;
+    cursor: string;
+};
+
+export type SSaaSSignalsResponse = {
+    ok: boolean;
+    subscribedMarkets: string[] | 'all';
+    signals: SSaaSSignal[];
+    cursor: string | null;
+};
+
+export type SSaaSMarketsResponse = {
+    ok: boolean;
+    engine: string;
+    availableMarkets: string[];
+    pricing: {
+        weekly: { amount: string; currency: string; duration: string };
+        monthly: { amount: string; currency: string; duration: string };
+    };
+    notes: string[];
+};
+
+export type SSaaSInvoice = {
+    invoiceId: string;
+    plan: string;
+    amountUsdc: string;
+    markets: string[];
+    recipient: string;
+    memo: string;
+    expiresAt: string;
+    apiKey: string;
+};
+
+/**
+ * Fetch available markets and pricing (public, no auth required).
+ */
+export async function ssaasGetMarkets(options: {
+    ssaasUrl: string;
+}): Promise<SSaaSMarketsResponse> {
+    const base = options.ssaasUrl.replace(/\/+$/, '');
+    const res = await fetch(`${base}/ee-8/subscribe/markets`);
+    if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`SSaaS markets error (${res.status}): ${text}`);
+    }
+    return res.json() as Promise<SSaaSMarketsResponse>;
+}
+
+/**
+ * Subscribe to SSaaS — creates an invoice for USDC payment.
+ * walletAddress should be the PUBLIC Solana address only. NEVER send private keys.
+ */
+export async function ssaasSubscribe(options: {
+    ssaasUrl: string;
+    clientId: string;
+    plan: 'weekly' | 'monthly';
+    markets?: string[];
+    walletAddress?: string;  // PUBLIC wallet address only — Sentry is non-custodial
+}): Promise<{ ok: boolean; invoice: SSaaSInvoice }> {
+    const base = options.ssaasUrl.replace(/\/+$/, '');
+    const res = await fetch(`${base}/ee-8/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            clientId: options.clientId,
+            plan: options.plan,
+            markets: options.markets,
+            walletAddress: options.walletAddress,
+        }),
+    });
+    if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`SSaaS subscribe error (${res.status}): ${text}`);
+    }
+    return res.json() as Promise<{ ok: boolean; invoice: SSaaSInvoice }>;
+}
+
+/**
+ * Poll for trading signals (requires active subscription + API key).
+ */
+export async function ssaasPollSignals(options: {
+    ssaasUrl: string;
+    apiKey: string;
+    symbols?: string;
+    since?: string;
+    limit?: number;
+}): Promise<SSaaSSignalsResponse> {
+    const base = options.ssaasUrl.replace(/\/+$/, '');
+    const params = new URLSearchParams();
+    if (options.symbols) params.set('symbols', options.symbols);
+    if (options.since) params.set('since', options.since);
+    if (options.limit) params.set('limit', String(options.limit));
+
+    const res = await fetch(`${base}/ee-8/signals?${params}`, {
+        headers: { 'x-api-key': options.apiKey },
+    });
+    if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`SSaaS signals error (${res.status}): ${text}`);
+    }
+    return res.json() as Promise<SSaaSSignalsResponse>;
+}
+
+// -------------------------
 // Legacy (still supported)
 // -------------------------
 
