@@ -113,30 +113,29 @@ solana address -k ~/.config/solana/agent-wallet.json
 curl -s https://SSAAS_API_URL/ee-8/subscribe/markets | jq .
 ```
 
-### Step 3 — Subscribe and create an invoice
+### Step 3 — Verify token gate (MOLTING deposit)
 
 ```bash
-curl -s -X POST https://SSAAS_API_URL/ee-8/subscribe \
-  -H "Content-Type: application/json" \
-  -d '{
-    "clientId": "my-agent-001",
-    "plan": "weekly",
-    "markets": ["SOL", "BONK", "PENGU"],
-    "walletAddress": "YOUR_PUBLIC_WALLET_ADDRESS"
-  }' | jq .
+# Check your token gate status
+curl -s https://SENTRY_API_URL/api/agent/token-gate \
+  -H "Authorization: Bearer YOUR_API_KEY" | jq .
 ```
 
-> **Important:** The `walletAddress` is your **public** Solana address only. **NEVER send your private key to any API.** Sentry only stores your public address to identify customers.
+If not yet verified, the response shows the `feesWallet` and how many MOLTING tokens you still need to deposit.
 
-Save the `apiKey` from the response. Tell your owner:
-> "I've created a subscription invoice. Please send exactly **99 USDC** to `<recipient>` on Solana with the memo `<memo>`. The invoice expires at `<expiresAt>`."
+**Tell your owner:**
+> "To access EE-16 strategies, we need to deposit 1,000,000 MOLTING tokens to the Sentry fees wallet at `<feesWallet>`. Please send SOL to my wallet so I can market-buy MOLTING and complete the deposit. There are no recurring fees or trade fees after this."
 
-### Step 4 — Wait for payment confirmation, then start polling
+### Step 4 — Complete the MOLTING deposit
+
+1. Market-buy 1,000,000 MOLTING via Jupiter (SOL → MOLTING)
+2. Transfer the MOLTING to the fees wallet
+3. Re-check the token gate endpoint — it will show `verified: true`
 
 ```bash
-# Test your API key works (will return 403 until payment confirms)
-curl -s https://SSAAS_API_URL/ee-8/signals \
-  -H "x-api-key: YOUR_API_KEY" | jq .
+# Verify the deposit was detected
+curl -s https://SENTRY_API_URL/api/agent/token-gate \
+  -H "Authorization: Bearer YOUR_API_KEY" | jq .
 ```
 
 ### Step 5 — Run the signal loop
@@ -153,12 +152,11 @@ See the full [Minimal Agent Loop](#example-minimal-agent-loop-typescript) below.
 
 ### What you provide:
 1. **A Solana wallet** — your agent creates one, or you can provide an existing one
-2. **SOL** — send SOL to the agent's wallet for trading capital + transaction fees
-3. **USDC** — one-time payment for the subscription ($99/week or $220/month)
+2. **SOL** — send SOL to the agent's wallet for trading capital, transaction fees, and the MOLTING token gate deposit
 
 ### What your agent handles:
 1. Wallet creation (if needed)
-2. Subscribing to SSaaS via the API
+2. Market-buying 1,000,000 MOLTING tokens and depositing them to the Sentry fees wallet (one-time token gate)
 3. Polling for BUY/SELL/HOLD signals every 60 seconds
 4. Executing trades on Solana DEXes (Jupiter, Raydium, Orca)
 5. Managing positions and tracking PnL
@@ -166,10 +164,11 @@ See the full [Minimal Agent Loop](#example-minimal-agent-loop-typescript) below.
 ### Setup flow:
 1. **Give your agent this document** — it contains everything it needs
 2. Your agent will create a wallet and give you the address
-3. **Fund the wallet with SOL** (1–10 SOL depending on how many markets)
-4. Your agent will create a subscription invoice
-5. **Send the exact USDC amount** to the Sentry payment wallet with the memo
-6. Payment verifies automatically — your agent starts receiving signals
+3. **Fund the wallet with SOL** (enough for the MOLTING deposit + trading capital)
+4. Your agent market-buys 1,000,000 MOLTING and deposits them to the fees wallet
+5. Token gate verifies automatically — your agent can now run EE-16 strategies
+
+> **No USDC needed. No recurring subscription. No trade fees.** The MOLTING deposit is the only cost.
 
 ### How much SOL do I need?
 
@@ -179,7 +178,7 @@ See the full [Minimal Agent Loop](#example-minimal-agent-loop-typescript) below.
 | 3–5 | 1 SOL | 3–5 SOL |
 | All 10 | 2 SOL | 5–10 SOL |
 
-You do **NOT** need USDC in the wallet for trading. USDC is only for the subscription payment. All trades execute against SOL pairs.
+You do **NOT** need USDC. All trades execute against SOL pairs. The only requirement is the one-time MOLTING token gate deposit.
 
 ---
 
@@ -243,16 +242,25 @@ You choose which markets to receive signals for when subscribing. You can opt in
 
 ---
 
-## Pricing
+## Access — Token-Gated via MOLTING
 
-| Plan | Price | Duration |
-|------|-------|----------|
-| Weekly | **99 USDC** | 7 days |
-| Monthly | **220 USDC** | 30 days |
+EE-16 access is **token-gated**. There is no USDC subscription fee and no per-trade fee.
 
-- Payment is made in **USDC on Solana** to the Sentry payment wallet.
-- All markets are included in the subscription price — choose which ones to receive signals for.
-- Subscriptions stack: paying again before expiry extends your access.
+| Requirement | Details |
+|-------------|---------|
+| **Deposit** | **1,000,000 MOLTING** tokens |
+| **Destination** | Sentry fees wallet (returned by `checkTokenGate()`) |
+| **Verification** | On-chain via Helius transaction history |
+| **Trade fees** | **None** — 0% on all EE-16 trades |
+| **Duration** | Permanent once verified |
+
+### How to unlock access
+1. Market-buy **1,000,000 MOLTING** within your agent wallet (via Jupiter or any Solana DEX)
+2. Transfer the MOLTING to the Sentry fees wallet
+3. Call `GET /api/agent/token-gate` (or `checkTokenGate()` in the SDK) to verify
+4. Once verified, start EE-16 strategies — choose any combination of the 10 markets
+
+> **Why MOLTING?** This is token-gated utility. Depositing MOLTING supports the ecosystem and grants access to the full EE-16 strategy engine across all 10 markets. No recurring payments, no trade fees.
 
 ---
 
@@ -459,98 +467,68 @@ Recommended amounts based on your preferences:
 - 3–5 markets: 3–5 SOL  
 - All 10 markets: 5–10 SOL
 
-You do NOT need to send USDC to this wallet for trading.
-All trades execute against SOL pairs on-chain.
+You do NOT need USDC. All trades execute against SOL pairs on-chain.
 
-For the subscription payment, you'll need to send 99 USDC (weekly)
-or 220 USDC (monthly) separately — I'll provide the payment details
-once I create the subscription invoice.
+To unlock EE-16 strategies, I'll use some of the SOL to market-buy
+1,000,000 MOLTING tokens and deposit them to the Sentry fees wallet.
+This is a one-time token gate — no recurring fees, no trade fees.
 ```
 
 ---
 
-## USDC Payment (Subscription Only)
+## MOLTING Token Gate (Access Deposit)
 
-To pay for the subscription, you (or your owner) need to send USDC on Solana.
+To access EE-16 strategies, deposit **1,000,000 MOLTING** tokens to the Sentry fees wallet. This replaces the old USDC subscription model entirely — no recurring payments, no trade fees.
 
-### Sending USDC via CLI
+### Step 1 — Get the fees wallet address
 
 ```bash
-# USDC mint on Solana mainnet
-USDC_MINT="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-
-# Send USDC with memo (replace values from your invoice)
-spl-token transfer $USDC_MINT <AMOUNT> <RECIPIENT> \
-  --from <YOUR_USDC_TOKEN_ACCOUNT> \
-  --fund-recipient \
-  --with-memo "molty:signals:<INVOICE_ID>"
+curl -s https://SENTRY_API_URL/api/agent/token-gate \
+  -H "Authorization: Bearer YOUR_API_KEY" | jq .data.feesWallet
 ```
 
-### Sending USDC programmatically
+### Step 2 — Market-buy MOLTING
 
-Save as `pay_invoice.ts` and run with `npx tsx pay_invoice.ts`:
+Use Jupiter or any Solana DEX to swap SOL → MOLTING. The MOLTING token mint is:
+```
+5552z6Qp2xr596ox1UVN4ppDwwyjCfY8cXwzHMXgMcaS
+```
+
+### Step 3 — Transfer MOLTING to the fees wallet
 
 ```typescript
-import dotenv from 'dotenv';
-dotenv.config();
-
-import {
-  Connection, Keypair, Transaction, PublicKey,
-} from '@solana/web3.js';
-import {
-  getAssociatedTokenAddress,
-  createTransferInstruction,
-  getOrCreateAssociatedTokenAccount,
-} from '@solana/spl-token';
+import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { getAssociatedTokenAddress, createTransferInstruction, getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
 import bs58 from 'bs58';
 
-const USDC_MINT = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
-const USDC_DECIMALS = 6;
+const MOLTING_MINT = new PublicKey('5552z6Qp2xr596ox1UVN4ppDwwyjCfY8cXwzHMXgMcaS');
+const MOLTING_DECIMALS = 9;
+const FEES_WALLET = new PublicKey('FEES_WALLET_ADDRESS'); // from checkTokenGate()
 
-async function payInvoice(
-  connection: Connection,
-  payer: Keypair,
-  recipientAddress: string,
-  amountUsdc: number,
-  memo: string,
-) {
-  const recipient = new PublicKey(recipientAddress);
-  const payerAta = await getAssociatedTokenAddress(USDC_MINT, payer.publicKey);
-  const recipientAta = await getOrCreateAssociatedTokenAccount(
-    connection, payer, USDC_MINT, recipient,
-  );
+const connection = new Connection('https://api.mainnet-beta.solana.com');
+const keypair = Keypair.fromSecretKey(bs58.decode(process.env.WALLET_SECRET_KEY!));
 
-  const transferIx = createTransferInstruction(
-    payerAta,
-    recipientAta.address,
-    payer.publicKey,
-    amountUsdc * 10 ** USDC_DECIMALS,
-  );
+const payerAta = await getAssociatedTokenAddress(MOLTING_MINT, keypair.publicKey);
+const recipientAta = await getOrCreateAssociatedTokenAccount(connection, keypair, MOLTING_MINT, FEES_WALLET);
 
-  // Add memo instruction
-  const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
-  const memoIx = {
-    keys: [],
-    programId: MEMO_PROGRAM_ID,
-    data: Buffer.from(memo, 'utf-8'),
-  };
+const ix = createTransferInstruction(
+  payerAta,
+  recipientAta.address,
+  keypair.publicKey,
+  1_000_000 * 10 ** MOLTING_DECIMALS, // 1,000,000 MOLTING
+);
 
-  const tx = new Transaction().add(transferIx).add(memoIx);
-  const sig = await connection.sendTransaction(tx, [payer]);
-  console.log('Payment sent:', sig);
-  return sig;
-}
+// ... sign and send transaction
 ```
 
-### Sending USDC from a wallet app (Phantom, Solflare, etc.)
+### Step 4 — Verify
 
-1. Open your wallet app
-2. Select USDC
-3. Send the exact amount (99 or 220 USDC) to the recipient address
-4. **Add the memo** in the memo/note field: `molty:signals:<invoiceId>`
-5. Confirm the transaction
+```bash
+curl -s https://SENTRY_API_URL/api/agent/token-gate \
+  -H "Authorization: Bearer YOUR_API_KEY" | jq .
+```
 
-> **Important:** The memo must be included or the payment won't be matched to your invoice.
+Once `verified: true`, you can start EE-16 strategies.
 
 ---
 
@@ -568,23 +546,17 @@ Here's the complete flow an agent should follow, from zero to trading:
     - Tell your owner to send SOL to your wallet address
     - Specify how much based on the number of markets
 
-[ ] 3. CHECK MARKETS
-    - GET /ee-8/subscribe/markets
-    - Review available markets and pricing
-    - Decide which markets to subscribe to
-
-[ ] 4. SUBSCRIBE
-    - POST /ee-8/subscribe with clientId, plan, markets, and walletAddress (public key only!)
-    - Save the apiKey from the response
-    - Give your owner the payment details (amount, recipient, memo)
+[ ] 3. TOKEN GATE DEPOSIT
+    - Market-buy 1,000,000 MOLTING tokens via Jupiter (SOL → MOLTING)
+    - Transfer the MOLTING to the Sentry fees wallet
+    - Verify via GET /api/agent/token-gate
     - NEVER send your private key to any API endpoint
 
-[ ] 5. WAIT FOR PAYMENT
-    - Your owner sends USDC on Solana with the invoice memo
-    - Payment verifies automatically (usually within 30 seconds)
-    - Test your API key: GET /ee-8/signals with x-api-key header
+[ ] 4. VERIFY ACCESS
+    - GET /api/agent/token-gate should return verified: true
+    - If not verified yet, check the remaining amount and complete the deposit
 
-[ ] 6. START SIGNAL LOOP
+[ ] 5. START SIGNAL LOOP
     - Poll GET /ee-8/signals every 60 seconds
     - Use cursor-based pagination (since parameter)
     - On BUY: swap SOL → Token via Jupiter
@@ -872,11 +844,11 @@ async function executeJupiterSwap(
 
 ---
 
-## Subscription Management
+## Access Management
 
-- Subscription status is checked on every API call. Expired = `403`.
-- To renew: create a new invoice and pay it. Renewals **stack** (time extends).
-- To change markets: include `markets` array in your next subscription request.
+- Token gate status is checked when starting EE-16 strategies. Unverified = blocked.
+- The token gate is **permanent** — once verified, access does not expire.
+- To change markets: update your strategy via the SDK or PWA (no additional deposit needed).
 
 ---
 
@@ -885,11 +857,11 @@ async function executeJupiterSwap(
 | Issue | Solution |
 |-------|----------|
 | `401 Missing API key` | Include your API key in the `x-api-key` header |
-| `403 Subscription inactive` | Your subscription has expired — renew via POST /ee-8/subscribe |
+| `403 Token gate not verified` | Deposit 1,000,000 MOLTING to the fees wallet and call checkTokenGate() |
 | `403 Client disabled` | Contact Sentry support |
 | No signals returned | Check your `symbols` filter matches your subscribed markets |
 | Stale signals only | Use cursor-based pagination with `since` to get only new signals |
-| Payment not detected | Verify the memo format is exactly `molty:signals:<invoiceId>` and USDC amount matches exactly |
+| MOLTING deposit not detected | Ensure you transferred to the correct fees wallet; verification uses Helius transaction history and may take a few seconds |
 | Wallet has no SOL | Fund your wallet with SOL before attempting trades |
 | Transaction fails | Ensure you have enough SOL for fees (keep 0.05+ SOL reserve) |
 

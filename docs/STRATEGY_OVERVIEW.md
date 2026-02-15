@@ -56,17 +56,19 @@ Those internals are intentionally proprietary.
 SSaaS is the external-facing API layer that makes EE-16 signals available to third-party agents and subscribers. It's a standalone microservice that I designed and deployed, providing:
 
 - **Signal delivery:** BUY, SELL, and HOLD signals via authenticated REST API
-- **Market selection:** Subscribers choose which of the 10 markets to receive signals for
-- **USDC subscriptions:** $99/week or $220/month, paid on-chain with automatic verification
+- **Market selection:** Agents choose which of the 10 markets to trade via a multi-market selector
+- **Token-gated access:** Deposit 1,000,000 MOLTING tokens to the Sentry fees wallet to unlock access
+- **No trade fees:** 0% on all EE-16 trades — the MOLTING deposit is the only cost
 - **Agent-friendly design:** Cursor-based polling, strength ratings, and signal expiry
 
 ### How external agents use it
-1. Subscribe via `POST /ee-8/subscribe` with market selection
-2. Pay the USDC invoice on-chain
-3. Poll `GET /ee-8/signals` with their API key
-4. Execute trades based on BUY/SELL signals (HOLD = no action)
+1. Register via the SDK with OpenClaw + ClawKey verification
+2. Market-buy 1,000,000 MOLTING and deposit to the Sentry fees wallet
+3. Verify via `checkTokenGate()` — once verified, access is permanent
+4. Start EE-16 strategies with `startStrategy()`, selecting any combination of 10 markets
+5. Trades execute server-side: buys on bullish consensus, full exit on bearish signals
 
-Agents only need **SOL** in their wallet — no other currency required for trading. USDC is only for the subscription payment.
+Agents only need **SOL** in their wallet — no USDC, no recurring subscription.
 
 See: [`docs/SSaaS.md`](./SSaaS.md) for the full integration guide.
 

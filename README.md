@@ -25,7 +25,7 @@ This repository is a **public, sanitized showcase** for judges. The live system 
 - **Three strategy families:**
   - **Triangular arbitrage** across an "exotic pair" liquidity network.
   - **Ecdysis Engine EE-16:** evolved from EE-8 — a proprietary 16-indicator sentiment ensemble generating BUY/SELL/HOLD signals across 10 Solana assets (high-level only here).
-  - **Signal SaaS (SSaaS):** standalone microservice providing real-time EE-16 signals with USDC subscription payments, market selection, and public candle chart API.
+  - **Signal SaaS (SSaaS):** standalone microservice providing real-time EE-16 signals with token-gated access (MOLTING deposit), market selection, and public candle chart API.
 - **Thesis:** **Liquidity is a consequence, not a prerequisite.** Participation creates activity → activity creates liquidity/volume → liquidity enables more participation.
 
 ---
@@ -81,9 +81,9 @@ The culmination of the EE-16 evolution: a production API that external agents ca
 - No engine thresholds or trigger logic
 - No proprietary formula exposure
 
-**Pricing:** $99 USDC/week or $220 USDC/month, paid on-chain on Solana.
+**Access:** Currently **invite-only** via beta codes provided by the Sentry team. No deposit, no subscription, no trade fees during beta. Post-beta access will use a MOLTING token-gated model (details TBD).
 
-**Wallet requirement:** Agents only need **SOL** — no other currency required for trading. USDC is only for the subscription payment.
+**Wallet requirement:** Agents only need **SOL** — for trading capital and transaction fees. That's it.
 
 See: [`docs/SSaaS.md`](./docs/SSaaS.md) — full integration guide with API reference, code examples, and position sizing strategies.
 
@@ -92,7 +92,7 @@ A standalone service I designed and deployed on Railway:
 - **Price indexer** polling Jupiter/Helius/GeckoTerminal every 60s → 5m OHLCV candles
 - **EE-16 signal engine** generating autonomous BUY/SELL/HOLD signals
 - **Public chart API** (`/ee-8/candles/:symbol`) serving TradingView-compatible data
-- **USDC subscription payments** verified via Helius Enriched Transaction webhooks
+- **MOLTING token-gated access** verified via Helius Enhanced Transaction history
 - **Market selection** — subscribers choose which of 10 tokens to receive signals for
 - **Persistent PostgreSQL** for candle history, signal data, and subscriptions
 
@@ -144,13 +144,33 @@ A longer writeup of the market-formation thesis is here:
 
 ---
 
+## EE-16 Closed Beta (Current)
+
+The EE-16 engine is now available to external agents via an **invite-only closed beta**. Beta participants receive an invite code that bypasses the MOLTING token gate — no deposit required during the beta period.
+
+**What beta participants get:**
+- Full autonomous EE-16 strategy execution across up to 10 Solana markets
+- Zero fees during beta
+- Set-it-and-forget-it operation — deposit SOL, choose markets, the engine handles everything
+
+**How to participate:**
+1. Register via the SDK (ClawKey/VeryAI human verification required)
+2. Fund your agent wallet with SOL
+3. Redeem your beta invite code
+4. Start the EE-16 strategy
+
+See: [`docs/AGENT_ONBOARDING.md`](./docs/AGENT_ONBOARDING.md) for the full onboarding flow, or [`examples/redeem_beta_code.ts`](./examples/redeem_beta_code.ts) for the quick-start script.
+
+---
+
 ## Roadmap (post-hackathon)
 
 - ~~Open signal API to external subscribers~~ **DONE — SSaaS is live**
 - ~~Accumulate candle history for high-confidence signals across all 10 markets~~ **DONE — EE-16 running**
-- Enable EE-16 strategy execution for verified agents via the SDK
+- ~~Enable EE-16 strategy execution for verified agents via the SDK~~ **DONE — multi-market support live**
+- ~~MOLTING token-gated access~~ **DONE — deposit 1M MOLTING to unlock EE-16 (replaces USDC subscription, 0% trade fees)**
+- ~~EE-16 closed beta for external agents~~ **ACTIVE — invite-only beta with code-gated access**
 - Add signal overlays and performance tracking to the Moltiverse dashboard
-- **MOLTING token-gated access** — hold 1–3% of MOLTING supply to unlock market access (alternative to USDC subscription)
 - Strategy marketplace where agents publish and fork trading strategies
 
 Each evolution is a new molt. The system keeps improving.

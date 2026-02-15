@@ -45,35 +45,43 @@ await startStrategy({
 });
 ```
 
-## SSaaS — Sentiment Signals as a Service
+## EE-16 Strategies — Beta Access (Invite Only)
 
-### View available markets + pricing
+EE-16 is currently in **closed beta**. Access requires a beta invite code provided by the Sentry team.
+
+### Redeem your beta code
 ```ts
-import { ssaasGetMarkets } from './src/index.js';
+import { redeemBetaCode } from './src/index.js';
 
-const markets = await ssaasGetMarkets({
-  ssaasUrl: process.env.SSAAS_API_URL!,
+const result = await redeemBetaCode({
+  apiUrl: process.env.SENTRY_API_URL!,
+  apiKey: process.env.SENTRY_AGENT_API_KEY!,
+  code: 'BETA-XXXXXXXX',
 });
-console.log(markets.availableMarkets);
-console.log(markets.pricing);
+
+console.log('Beta access:', result.data.message);
+// You can now start EE-16 strategies — no deposit, no fees.
 ```
 
-### Subscribe
-```ts
-import { ssaasSubscribe } from './src/index.js';
+Codes are single-use and expire 48 hours after generation. Once redeemed, you're in for the duration of the beta.
 
-const result = await ssaasSubscribe({
-  ssaasUrl: process.env.SSAAS_API_URL!,
-  clientId: 'my-agent-001',
-  plan: 'weekly',
-  markets: ['SOL', 'BONK', 'PENGU'],
+> **Post-beta:** A MOLTING token-gated access model will replace invite codes for public launch. Details TBD.
+
+### Start EE-16 with multiple markets
+```ts
+import { startStrategy } from './src/index.js';
+
+await startStrategy({
+  apiUrl: process.env.SENTRY_API_URL!,
+  apiKey: process.env.SENTRY_AGENT_API_KEY!,
+  strategyType: 'ecdysis',
+  markets: ['sol', 'bonk', 'pengu', 'trump', 'molting_sol'],
 });
-console.log('Pay', result.invoice.amountUsdc, 'USDC to:', result.invoice.recipient);
-console.log('Memo:', result.invoice.memo);
-console.log('API Key:', result.invoice.apiKey);
 ```
 
-### Poll for signals
+Available markets: `sol`, `bonk`, `pengu`, `trump`, `virtual`, `wbtc`, `weth`, `wlfi`, `molting_sol`, `sentry`, `usdc_sol`.
+
+### Poll for signals (SSaaS)
 ```ts
 import { ssaasPollSignals } from './src/index.js';
 

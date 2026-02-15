@@ -233,18 +233,27 @@ async function requestSentry<T>(options: {
     return response.json() as Promise<T>;
 }
 
+export type EcdysisMarket =
+    | 'molting_sol' | 'usdc_sol'
+    | 'sol' | 'bonk' | 'pengu' | 'trump' | 'virtual' | 'wbtc' | 'weth' | 'wlfi' | 'sentry';
+
 export async function startStrategy(options: {
     apiUrl: string;
     apiKey: string;
     strategyType: 'arb' | 'ecdysis';
-    market?: 'molting_sol' | 'usdc_sol';
+    market?: EcdysisMarket;
+    markets?: EcdysisMarket[];
 }): Promise<{ success: boolean; strategy: any }> {
     return requestSentry({
         apiUrl: options.apiUrl,
         apiKey: options.apiKey,
         path: '/api/agent/strategy/start',
         method: 'POST',
-        body: { strategyType: options.strategyType, market: options.market }
+        body: {
+            strategyType: options.strategyType,
+            market: options.market,
+            markets: options.markets,
+        }
     });
 }
 
@@ -303,6 +312,101 @@ export async function withdrawFunds(options: {
 }
 
 // -------------------------
+// Token Gate — MOLTING deposit verification
+// -------------------------
+
+export type TokenGateResponse = {
+    success: boolean;
+    data: {
+        verified: boolean;
+        required: number;      // e.g. 1_000_000
+        totalDeposited: number; // MOLTING tokens verified on-chain
+        remaining: number;      // how many more needed (0 if verified)
+        feesWallet: string;     // deposit destination
+        moltingMint: string;    // MOLTING token mint address
+        tier: string;           // e.g. "1M MOLTING"
+    };
+};
+
+/**
+ * Check the agent's MOLTING token-gate status.
+ *
+ * To use EE-16 strategies, agents must deposit 1,000,000 MOLTING tokens
+ * to the Sentry fees wallet. This replaces the old USDC subscription model.
+ *
+ * Flow:
+ *   1. Market-buy MOLTING tokens (via Jupiter or any Solana DEX)
+ *   2. Transfer 1,000,000 MOLTING to the fees wallet returned by this endpoint
+ *   3. Call this endpoint — it verifies on-chain via Helius transaction history
+ *   4. Once verified, the agent can start EE-16 strategies
+ *
+ * No trade fees are charged. The MOLTING deposit is the only cost.
+ */
+export async function checkTokenGate(options: {
+    apiUrl: string;
+    apiKey: string;
+}): Promise<TokenGateResponse> {
+    return requestSentry({
+        apiUrl: options.apiUrl,
+        apiKey: options.apiKey,
+        path: '/api/agent/token-gate',
+        method: 'GET'
+    });
+}
+
+// -------------------------
+// Wallet Balance
+// -------------------------
+
+export async function getWalletBalance(options: {
+    apiUrl: string;
+    apiKey: string;
+}): Promise<{ success: boolean; data: { balanceSol: number; moltingBalanceUi: number; usdcBalanceUi: number } }> {
+    return requestSentry({
+        apiUrl: options.apiUrl,
+        apiKey: options.apiKey,
+        path: '/api/agent/wallet/balance',
+        method: 'GET'
+    });
+}
+
+// -------------------------
+// Beta Code — EE-16 Closed Beta Access
+// -------------------------
+
+export type BetaCodeResponse = {
+    success: boolean;
+    data: {
+        message: string;
+        tokenGateVerified: boolean;
+        betaParticipant: boolean;
+    };
+};
+
+/**
+ * Redeem an EE-16 beta invite code.
+ *
+ * During the closed beta, invite codes bypass the MOLTING token gate requirement.
+ * Codes are provided directly by the Sentry team and are single-use with an expiry window.
+ *
+ * Once redeemed, the agent can immediately start EE-16 strategies without
+ * the 1,000,000 MOLTING deposit.
+ */
+export async function redeemBetaCode(options: {
+    apiUrl: string;
+    apiKey: string;
+    code: string;
+}): Promise<BetaCodeResponse> {
+    return requestSentry({
+        apiUrl: options.apiUrl,
+        apiKey: options.apiKey,
+        path: '/api/agent/beta-code/redeem',
+        method: 'POST',
+        body: { code: options.code }
+    });
+}
+
+// -------------------------
 // SSaaS — Sentiment Signals as a Service
 // -------------------------
 
@@ -330,6 +434,13 @@ export type SSaaSMarketsResponse = {
     pricing: {
         weekly: { amount: string; currency: string; duration: string };
         monthly: { amount: string; currency: string; duration: string };
+    };
+    access: {
+        model: 'token_gate';
+        token: 'MOLTING';
+        required: number;          // e.g. 1_000_000
+        feesWallet: string;
+        note: string;
     };
     notes: string[];
 };
@@ -361,7 +472,10 @@ export async function ssaasGetMarkets(options: {
 }
 
 /**
- * Subscribe to SSaaS — creates an invoice for USDC payment.
+ * Subscribe to SSaaS — registers interest and selects markets.
+ *
+ * **Access is now token-gated via MOLTING deposit (no USDC payment required).**
+ * Use `checkTokenGate()` to verify your deposit status before starting strategies.
  * walletAddress should be the PUBLIC Solana address only. NEVER send private keys.
  */
 export async function ssaasSubscribe(options: {

@@ -74,17 +74,41 @@ SENTRY_AGENT_API_KEY=<apiKey from registration output>
 
 ## Step 5 — Fund the platform wallet
 To run strategies, the agent wallet needs:
-- **SOL** for transaction fees (typical starting range: 0.02–0.05 SOL)
-- **MOLTING** for arb routing inventory
-
-Recommended starter funding:
-- ~0.25–0.5 SOL worth of MOLTING (then top up as needed)
+- **SOL** for transaction fees and trading capital (typical starting range: 0.5–10 SOL depending on # of markets)
+- **MOLTING** for arb routing inventory (arb strategy only)
 
 ---
 
-## Step 6 — Start arb
-Create a TypeScript script:
+## Step 6 — Redeem your beta invite code (required for EE-16)
 
+EE-16 strategy access is currently **invite-only**. You need a beta code provided by the Sentry team.
+
+```ts
+import { redeemBetaCode } from './src/index.js';
+
+const result = await redeemBetaCode({
+  apiUrl: process.env.SENTRY_API_URL!,
+  apiKey: process.env.SENTRY_AGENT_API_KEY!,
+  code: 'BETA-XXXXXXXX', // your invite code
+});
+
+console.log('Beta access:', result.data.message);
+// tokenGateVerified: true, betaParticipant: true
+```
+
+- Beta codes are **single-use** and expire **48 hours** after generation.
+- Once redeemed, you have full EE-16 access for the duration of the beta.
+- No MOLTING deposit, no fees — just the code and SOL for trading capital.
+
+> **Triangular arbitrage (`arb`) does not require a beta code.**
+>
+> **Post-beta:** A MOLTING token-gated access model will replace invite codes for public launch. Details TBD.
+
+---
+
+## Step 7 — Start a strategy
+
+### Triangular arbitrage (no token gate required)
 ```ts
 import { startStrategy } from './src/index.js';
 
@@ -95,11 +119,23 @@ await startStrategy({
 });
 ```
 
-The strategy runs server-side.
+### EE-16 sentiment strategy (requires token gate)
+```ts
+import { startStrategy } from './src/index.js';
+
+await startStrategy({
+  apiUrl: process.env.SENTRY_API_URL!,
+  apiKey: process.env.SENTRY_AGENT_API_KEY!,
+  strategyType: 'ecdysis',
+  markets: ['sol', 'bonk', 'pengu', 'trump', 'molting_sol'],
+});
+```
+
+Choose any combination of the 10 available markets. The strategy runs server-side.
 
 ---
 
-## Step 7 — Check balances
+## Step 8 — Check balances
 ```ts
 import { getWalletBalance } from './src/index.js';
 
@@ -115,7 +151,7 @@ console.log('USDC:', bal.data.usdcBalanceUi);
 
 ---
 
-## Step 8 — Check strategy status
+## Step 9 — Check strategy status
 ```ts
 import { getStrategyStatus } from './src/index.js';
 
@@ -129,7 +165,7 @@ console.log(status);
 
 ---
 
-## Step 9 — Stop, liquidate, withdraw
+## Step 10 — Stop, liquidate, withdraw
 Stop:
 ```ts
 import { stopStrategy } from './src/index.js';
