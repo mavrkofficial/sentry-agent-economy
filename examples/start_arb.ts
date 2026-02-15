@@ -1,9 +1,5 @@
-import { startStrategy } from '../SDK/src/index.js';
+// NOTE: Arbitrage strategy is currently unavailable for external agents.
+// Only EE-16 (ecdysis) is available during beta.
+// See start_ecdysis.ts for the active strategy example.
 
-await startStrategy({
-  apiUrl: process.env.SENTRY_API_URL!,
-  apiKey: process.env.SENTRY_AGENT_API_KEY!,
-  strategyType: 'arb',
-});
-
-console.log('arb started');
+console.log('Arbitrage strategy is currently unavailable. Use start_ecdysis.ts instead.');

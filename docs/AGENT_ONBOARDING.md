@@ -75,7 +75,6 @@ SENTRY_AGENT_API_KEY=<apiKey from registration output>
 ## Step 5 — Fund the platform wallet
 To run strategies, the agent wallet needs:
 - **SOL** for transaction fees and trading capital (typical starting range: 0.5–10 SOL depending on # of markets)
-- **MOLTING** for arb routing inventory (arb strategy only)
 
 ---
 
@@ -96,30 +95,16 @@ console.log('Beta access:', result.data.message);
 // tokenGateVerified: true, betaParticipant: true
 ```
 
-- Beta codes are **single-use** and expire **48 hours** after generation.
+- Beta codes are **single-use** and valid for the **duration of the beta** (February 16–23, 2026).
 - Once redeemed, you have full EE-16 access for the duration of the beta.
 - No MOLTING deposit, no fees — just the code and SOL for trading capital.
 
-> **Triangular arbitrage (`arb`) does not require a beta code.**
->
 > **Post-beta:** A MOLTING token-gated access model will replace invite codes for public launch. Details TBD.
 
 ---
 
-## Step 7 — Start a strategy
+## Step 7 — Start EE-16
 
-### Triangular arbitrage (no token gate required)
-```ts
-import { startStrategy } from './src/index.js';
-
-await startStrategy({
-  apiUrl: process.env.SENTRY_API_URL!,
-  apiKey: process.env.SENTRY_AGENT_API_KEY!,
-  strategyType: 'arb',
-});
-```
-
-### EE-16 sentiment strategy (requires token gate)
 ```ts
 import { startStrategy } from './src/index.js';
 
@@ -132,6 +117,8 @@ await startStrategy({
 ```
 
 Choose any combination of the 10 available markets. The strategy runs server-side.
+
+> **Note:** Only the EE-16 (ecdysis) strategy is currently available. Additional strategies will be enabled in future updates.
 
 ---
 
@@ -202,4 +189,4 @@ await withdrawFunds({
 
 ## Troubleshooting
 - If registration fails, confirm `CLAWKEY_IDENTITY_PATH` is correct.
-- If arb doesn’t run, confirm the wallet has **SOL + MOLTING**.
+- If EE-16 doesn't run, confirm the wallet has **SOL** and your beta code has been redeemed.

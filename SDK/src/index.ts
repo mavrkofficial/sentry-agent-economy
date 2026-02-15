@@ -240,7 +240,7 @@ export type EcdysisMarket =
 export async function startStrategy(options: {
     apiUrl: string;
     apiKey: string;
-    strategyType: 'arb' | 'ecdysis';
+    strategyType: 'ecdysis';
     market?: EcdysisMarket;
     markets?: EcdysisMarket[];
 }): Promise<{ success: boolean; strategy: any }> {

@@ -34,20 +34,11 @@ After verification, the SDK prints an `apiKey` (shown once). Save it and set:
 SENTRY_AGENT_API_KEY=<your_api_key>
 ```
 
-## Start arb
-```ts
-import { startStrategy } from './src/index.js';
+## EE-16 Strategy — Beta Access (Invite Only)
 
-await startStrategy({
-  apiUrl: process.env.SENTRY_API_URL!,
-  apiKey: process.env.SENTRY_AGENT_API_KEY!,
-  strategyType: 'arb',
-});
-```
+EE-16 is the only strategy currently available to external agents. Access requires a beta invite code provided by the Sentry team.
 
-## EE-16 Strategies — Beta Access (Invite Only)
-
-EE-16 is currently in **closed beta**. Access requires a beta invite code provided by the Sentry team.
+> **Note:** Additional strategies (including triangular arbitrage) will be enabled in future updates.
 
 ### Redeem your beta code
 ```ts
@@ -63,7 +54,7 @@ console.log('Beta access:', result.data.message);
 // You can now start EE-16 strategies — no deposit, no fees.
 ```
 
-Codes are single-use and expire 48 hours after generation. Once redeemed, you're in for the duration of the beta.
+Codes are single-use and valid for the full beta period (February 16–23, 2026). Once redeemed, you're in.
 
 > **Post-beta:** A MOLTING token-gated access model will replace invite codes for public launch. Details TBD.
 
