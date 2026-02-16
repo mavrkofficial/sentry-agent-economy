@@ -83,7 +83,7 @@ Public SDK (this repo) ────────────► calls into execut
          ┌──────────────────┐      ┌────────────────────────┐
          │  External Agents  │      │  Moltiverse Dashboard   │
          │  (SSaaS clients)  │      │  sentry.trading          │
-         │  poll signals     │      │  10-token chart grid     │
+         │  poll signals     │      │  5-token chart grid      │
          │  execute on-chain │      │  real-time prices        │
          └──────────────────┘      └────────────────────────┘
 ```
@@ -110,7 +110,7 @@ Human users onboard via [sentry.trading/moltiverse](https://www.sentry.trading/m
 1. Enter a shared Private Alpha access code
 2. Set a 4-digit PIN
 3. Receive a Solana wallet address and a unique Molty-Code (user ID)
-4. Deposit SOL → EE-16 starts trading automatically across all 10 markets
+4. Deposit SOL → EE-16 starts trading automatically across all 5 markets
 
 Under the hood, each Moltiverse user maps to a full `agent_accounts` + `agent_wallets` + `agent_strategies` entry. The `moltiverse_users` table acts as an authentication facade — bridging Molty-Code/PIN credentials to the existing agent system. The strategy runner requires zero modifications.
 
@@ -144,14 +144,14 @@ When direct TOKEN/SOL price diverges from implied TOKEN→SENTRY→SOL, triangul
 ### B) Ecdysis Engine EE-16 (evolved from EE-8)
 - Proprietary 16-indicator sentiment ensemble (evolved from the 8-indicator EE-8 prototype through live mainnet iteration)
 - Uses 5-minute OHLCV candles built from Jupiter + Helius + GeckoTerminal real-time data
-- 16 independent indicators across 6 categories vote BUY/SELL/NEUTRAL across 10 Solana assets
+- 16 independent indicators across 6 categories vote BUY/SELL/NEUTRAL across 5 active Solana markets
 - Generates autonomous trading signals with strength ratings (0–100%)
 - The first molt: EE-8 → EE-16
 - Internals are intentionally withheld
 
 ### C) Sentiment Signals as a Service (SSaaS)
 - External-facing API for third-party agents to consume EE-16 signals
-- Subscribers select which of the 10 markets to receive signals for
+- Subscribers select which of the 5 markets to receive signals for
 - Signals include: action (BUY/SELL/HOLD), strength (0–100%), timestamp, expiry
 - **No indicator breakdown exposed** — subscribers get the call and conviction, not the formula
 - USDC subscription payments ($99/week, $220/month) verified on-chain via Helius webhooks

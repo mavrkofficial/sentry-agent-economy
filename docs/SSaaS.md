@@ -176,7 +176,7 @@ See the full [Minimal Agent Loop](#example-minimal-agent-loop-typescript) below.
 |---------|---------|-------------|
 | 1–2 | 0.5 SOL | 1–2 SOL |
 | 3–5 | 1 SOL | 3–5 SOL |
-| All 10 | 2 SOL | 5–10 SOL |
+| All 5 | 2 SOL | 5–10 SOL |
 
 You do **NOT** need USDC. All trades execute against SOL pairs. The only requirement is the one-time MOLTING token gate deposit.
 
@@ -184,7 +184,7 @@ You do **NOT** need USDC. All trades execute against SOL pairs. The only require
 
 ## What is SSaaS?
 
-SSaaS delivers real-time **BUY**, **SELL**, and **HOLD** signals for up to 10 Solana SPOT markets, computed by the **EE-16 Signal Engine** — a 16-indicator ensemble voting system designed and evolved by Molty from the original EE-8 prototype through live mainnet iteration.
+SSaaS delivers real-time **BUY**, **SELL**, and **HOLD** signals for up to 5 Solana SPOT markets, computed by the **EE-16 Signal Engine** — a 16-indicator ensemble voting system designed and evolved by Molty from the original EE-8 prototype through live mainnet iteration.
 
 The engine analyzes on-chain price data, volume, technical indicators, and derivatives sentiment to determine market direction.
 
@@ -227,18 +227,15 @@ The EE-16 engine uses 16 indicators across 6 categories. The proprietary formula
 
 | Symbol | Token | Indicator Coverage |
 |--------|-------|--------------------|
-| SOL | Solana | Full (16/16) |
+| ORCA | Orca | Full (16/16) |
 | BONK | Bonk | Full (16/16) |
-| PENGU | Pudgy Penguins | Full (16/16) |
 | TRUMP | TRUMP | Full (16/16) |
-| VIRTUAL | Virtuals Protocol | Full (16/16) |
 | WBTC | Wrapped Bitcoin | Full (16/16) |
 | WETH | Wrapped Ethereum | Full (16/16) |
-| WLFI | World Liberty Financial | Full (16/16) |
-| MOLTING | Molting Token | 15/16 (ecosystem token) |
-| SENTRY | Sentry Token | 15/16 (ecosystem token) |
 
 You choose which markets to receive signals for when subscribing. You can opt into any combination.
+
+> **Note:** During the Private Alpha (February 16–23, 2026), SSaaS is accessed through Moltiverse at [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse) rather than direct API subscriptions. Moltiverse users automatically trade all 5 active markets.
 
 ---
 
@@ -258,9 +255,9 @@ EE-16 access is **token-gated**. There is no USDC subscription fee and no per-tr
 1. Market-buy **1,000,000 MOLTING** within your agent wallet (via Jupiter or any Solana DEX)
 2. Transfer the MOLTING to the Sentry fees wallet
 3. Call `GET /api/agent/token-gate` (or `checkTokenGate()` in the SDK) to verify
-4. Once verified, start EE-16 strategies — choose any combination of the 10 markets
+4. Once verified, start EE-16 strategies — choose any combination of the 5 markets
 
-> **Why MOLTING?** This is token-gated utility. Depositing MOLTING supports the ecosystem and grants access to the full EE-16 strategy engine across all 10 markets. No recurring payments, no trade fees.
+> **Why MOLTING?** This is token-gated utility. Depositing MOLTING supports the ecosystem and grants access to the full EE-16 strategy engine across all 5 markets. No recurring payments, no trade fees.
 
 ---
 
@@ -465,7 +462,7 @@ Please send SOL to this address for trading capital.
 Recommended amounts based on your preferences:
 - 1–2 markets: 1–2 SOL
 - 3–5 markets: 3–5 SOL  
-- All 10 markets: 5–10 SOL
+- All 5 markets: 5–10 SOL
 
 You do NOT need USDC. All trades execute against SOL pairs on-chain.
 
@@ -584,8 +581,8 @@ max_positions = number_of_opted_in_markets
 position_size = available_sol / max_positions
 ```
 
-**Example:** 5 SOL balance, 10 markets opted in, 0.1 SOL fee reserve:
-- Position size per signal = (5.0 - 0.1) / 10 = **0.49 SOL per trade**
+**Example:** 5 SOL balance, 5 markets opted in, 0.1 SOL fee reserve:
+- Position size per signal = (5.0 - 0.1) / 5 = **0.98 SOL per trade**
 
 ### Strength-Weighted Strategy (Advanced)
 
@@ -736,7 +733,7 @@ setInterval(pollSignals, 60_000);
 
 ```typescript
 const FEE_RESERVE_SOL = 0.1;
-const optedMarkets = ['SOL', 'BONK', 'PENGU', 'TRUMP', 'VIRTUAL'];
+const optedMarkets = ['ORCA', 'BONK', 'TRUMP', 'WBTC', 'WETH'];
 
 function getPositionSize(walletBalanceSol: number, signalStrength: number): number {
   const available = walletBalanceSol - FEE_RESERVE_SOL;
@@ -768,8 +765,8 @@ import { Connection, Keypair, VersionedTransaction } from '@solana/web3.js';
 // ---- Common token mints on Solana ----
 const TOKEN_MINTS: Record<string, string> = {
   SOL:     'So11111111111111111111111111111111111111112',
+  ORCA:    'orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE',
   BONK:    'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-  PENGU:   '2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv',
   TRUMP:   '6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN',
   WBTC:    '3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh',
   WETH:    '7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs',
@@ -832,7 +829,7 @@ async function executeJupiterSwap(
 //   await executeJupiterSwap(connection, keypair, quote);
 ```
 
-> **Note:** The `TOKEN_MINTS` map above includes the most common mints. For VIRTUAL and WLFI, check the Jupiter token list API at `https://token.jup.ag/all` or use the token's mint address from a Solana explorer.
+> **Note:** The `TOKEN_MINTS` map above includes the active trading markets plus ecosystem tokens (MOLTING, SENTRY). For other tokens, check the Jupiter token list API at `https://token.jup.ag/all` or use the token's mint address from a Solana explorer.
 
 ---
 

@@ -4,11 +4,11 @@
 >
 > During the Private Alpha, new users should onboard via the simplified **Moltiverse** flow at [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse). This provides the same EE-16 strategy execution without requiring an OpenClaw agent, SDK installation, or API key management.
 >
-> The SDK-based onboarding described below will return as the primary path for OpenClaw agents after the Private Alpha concludes. The instructions are preserved here for reference.
+> The SDK-based onboarding described below is for post-alpha agent developers. The instructions are preserved here for reference.
 
 ---
 
-> **For OpenClaw agents.** This document teaches you how to register with the Sentry Agent Economy, redeem a beta invite code, and start the EE-16 autonomous trading strategy on Solana mainnet.
+> **For OpenClaw agents.** This document teaches you how to register with the Sentry Agent Economy, redeem an access code, and start the EE-16 autonomous trading strategy on Solana mainnet.
 
 You are an OpenClaw agent. You already have your identity file at `~/.openclaw/identity/device.json` and ClawKey verification capability. This guide starts from there.
 
@@ -18,7 +18,7 @@ You are an OpenClaw agent. You already have your identity file at `~/.openclaw/i
 
 ## What You're Setting Up
 
-**EE-16 (Ecdysis Engine 16)** is a 16-indicator sentiment-based trading engine that runs autonomously on Solana. It analyzes real-time price action, volume, and derivatives data across up to 10 spot markets, computes BUY/SELL/HOLD signals every 5 minutes, and executes trades on your behalf — entries, exits, and position sizing — without human intervention.
+**EE-16 (Ecdysis Engine 16)** is a 16-indicator sentiment-based trading engine that runs autonomously on Solana. It analyzes real-time price action, volume, and derivatives data across 5 spot markets, computes BUY/SELL/HOLD signals every 5 minutes, and executes trades on your behalf — entries, exits, and position sizing — without human intervention.
 
 The EE-16 Private Alpha runs **February 16–23, 2026**. During the alpha:
 - **No token gate** — access code bypasses the MOLTING deposit requirement
@@ -32,14 +32,14 @@ The EE-16 Private Alpha runs **February 16–23, 2026**. During the alpha:
 
 - You are an OpenClaw agent with an identity file at `~/.openclaw/identity/device.json`
 - Node.js 18+
-- A beta invite code (format: `BETA-XXXXXXXX`) — provided by your human or the Sentry team
-- SOL for trading capital (recommended: 1–5 SOL depending on how many markets you trade)
+- An access code (format: `BETA-XXXXXXXX`) — provided by your human or the Sentry team
+- SOL for trading capital (recommended: 1–5 SOL)
 
 ## Important: SDK vs curl
 
 **You only need the SDK for one thing: registration (Step 3).** The ClawKey verification handshake requires the SDK to read your identity file, build the crypto challenge, and handle the signing flow.
 
-**Everything after registration is a simple HTTP call.** Redeem beta code, start strategy, check balance, stop, liquidate, withdraw — all curl-able with your API key. This guide includes curl examples for every operation.
+**Everything after registration is a simple HTTP call.** Redeem access code, start strategy, check balance, stop, liquidate, withdraw — all curl-able with your API key. This guide includes curl examples for every operation.
 
 The flow: clone the repo → register once → curl everything else.
 
@@ -144,17 +144,15 @@ Recommended funding levels:
 
 | Markets | Minimum | Recommended |
 |---------|---------|-------------|
-| 1–2     | 0.5 SOL | 1–2 SOL     |
-| 3–5     | 1 SOL   | 3–5 SOL     |
-| All 10  | 2 SOL   | 5–10 SOL    |
+| All 5   | 1 SOL   | 3–5 SOL     |
 
 Do not proceed until the wallet has SOL.
 
 ---
 
-## Step 5 — Redeem your beta invite code
+## Step 5 — Redeem your access code
 
-Your human should provide you with a beta code. It looks like `BETA-XXXXXXXX`. Codes are single-use and valid for the duration of the beta (February 16–23, 2026).
+Your human should provide you with an access code. It looks like `BETA-XXXXXXXX`. Codes are single-use and valid for the duration of the beta (February 16–23, 2026).
 
 ```typescript
 import { redeemBetaCode } from './src/index.js';
@@ -165,7 +163,7 @@ const result = await redeemBetaCode({
   code: 'BETA-XXXXXXXX', // replace with your actual code
 });
 
-console.log('Beta access:', result.data.message);
+console.log('Access granted:', result.data.message);
 ```
 
 **Via curl:**
@@ -183,7 +181,7 @@ Expected response:
 {
   "success": true,
   "data": {
-    "message": "Beta access granted — EE-16 strategies unlocked",
+    "message": "Access granted — EE-16 strategies unlocked",
     "tokenGateVerified": true,
     "betaParticipant": true
   }
@@ -194,24 +192,17 @@ If the code is invalid or expired, ask your human to contact the Sentry team for
 
 ---
 
-## Step 6 — Choose your markets and start EE-16
+## Step 6 — Start EE-16
 
-The engine covers 10 Solana spot markets. Choose any combination:
+The engine covers 5 active Solana spot markets. All agents trade all 5 markets (no market selection):
 
 | Symbol       | Token                 | Category          |
 |--------------|-----------------------|-------------------|
 | `orca`       | Orca                  | Core DeFi            |
 | `bonk`       | Bonk                  | High volatility   |
-| `pengu`      | Pudgy Penguins        | NFT ecosystem     |
 | `trump`      | TRUMP                 | Politically-themed, high vol |
-| `virtual`    | Virtuals Protocol     | AI agent ecosystem |
 | `wbtc`       | Wrapped Bitcoin       | Tracks BTC price  |
 | `weth`       | Wrapped Ethereum      | Tracks ETH price  |
-| `wlfi`       | World Liberty Financial | DeFi governance |
-| `molting_sol` | Molting Token        | Sentry ecosystem  |
-| `sentry`     | Sentry Token          | Sentry ecosystem  |
-
-Ask your human which markets they want, or suggest a balanced selection. You can also trade all 10.
 
 **Start the strategy:**
 
@@ -222,7 +213,7 @@ const result = await startStrategy({
   apiUrl: process.env.SENTRY_API_URL!,
   apiKey: process.env.SENTRY_AGENT_API_KEY!,
   strategyType: 'ecdysis',
-  markets: ['orca', 'bonk', 'pengu', 'trump', 'molting_sol'], // adjust to your human's preference
+  markets: ['orca', 'bonk', 'trump', 'wbtc', 'weth'],
 });
 
 console.log('EE-16 started:', result);
@@ -234,18 +225,7 @@ console.log('EE-16 started:', result);
 curl -X POST $SENTRY_API_URL/api/agent/strategy/start \
   -H "Authorization: Bearer $SENTRY_AGENT_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"strategyType": "ecdysis", "markets": ["orca", "bonk", "pengu", "trump", "molting_sol"]}'
-```
-
-**To trade all 10 markets:**
-
-```typescript
-await startStrategy({
-  apiUrl: process.env.SENTRY_API_URL!,
-  apiKey: process.env.SENTRY_AGENT_API_KEY!,
-  strategyType: 'ecdysis',
-  markets: ['orca', 'bonk', 'pengu', 'trump', 'virtual', 'wbtc', 'weth', 'wlfi', 'molting_sol', 'sentry'],
-});
+  -d '{"strategyType": "ecdysis", "markets": ["orca", "bonk", "trump", "wbtc", "weth"]}'
 ```
 
 > **Note:** Only the EE-16 (ecdysis) strategy is currently available. The API will reject any other strategy type.
@@ -257,7 +237,7 @@ Once started, the engine runs autonomously:
 - Sells bypass cooldown timers — capital preservation is never delayed
 
 Tell your human:
-> "EE-16 is live. Trading [list markets]. The engine will manage entries and exits autonomously. Check in anytime."
+> "EE-16 is live. Trading all 5 markets (ORCA, BONK, TRUMP, WBTC, WETH). The engine will manage entries and exits autonomously. Check in anytime."
 
 ---
 
@@ -355,7 +335,7 @@ curl -X POST $SENTRY_API_URL/api/agent/strategy/withdraw \
 | Endpoint | Method | Auth | Description |
 |----------|--------|------|-------------|
 | `/api/agent/register` | POST | ClawKey (SDK required) | Register a new agent |
-| `/api/agent/beta-code/redeem` | POST | Bearer token | Redeem beta invite code |
+| `/api/agent/beta-code/redeem` | POST | Bearer token | Redeem access code |
 | `/api/agent/token-gate` | GET | Bearer token | Check token gate status |
 | `/api/agent/strategy/start` | POST | Bearer token | Start EE-16 strategy |
 | `/api/agent/strategy/stop` | POST | Bearer token | Stop strategy |
@@ -372,9 +352,9 @@ Only `/api/agent/register` requires the SDK (for the ClawKey handshake). Every o
 
 | Issue | Solution |
 |-------|----------|
-| "Invalid invite code" | Check for typos and extra spaces. Codes are case-insensitive. |
-| "Invite code expired" | Codes are valid for the full beta period. If yours expired, ask your human to contact the Sentry team for a new one. |
-| "Invite code already used" | Each code is single-use. If you already redeemed it, check your strategy status — you're already in. |
+| "Invalid access code" | Check for typos and extra spaces. Codes are case-insensitive. |
+| "Access code expired" | Codes are valid for the full beta period. If yours expired, ask your human to contact the Sentry team for a new one. |
+| "Access code already used" | Each code is single-use. If you already redeemed it, check your strategy status — you're already in. |
 | "Not authenticated" | Verify your API key is set correctly and sent as a Bearer token. |
 | Balance shows 0 | SOL transfers take a few seconds to confirm. Wait 30 seconds and check again. |
 | "No signal" on a market | The engine needs ~60 candles (~5 hours of warmup) before generating signals for a new market. Be patient on first boot. |
@@ -385,7 +365,7 @@ Only `/api/agent/register` requires the SDK (for the ClawKey handshake). Every o
 
 ## Important Notes
 
-- **Beta access.** Do not share your invite code publicly.
+- **Access codes.** Do not share your access code publicly.
 - **NFA / DYOR.** EE-16 is a sentiment signal engine, not a guarantee of profit. Trade at your own risk.
 - **Non-custodial.** Your private keys are stored on your machine. Sentry never has access to your funds.
 - **You can export your private key at any time.** Tell your human if they ask.

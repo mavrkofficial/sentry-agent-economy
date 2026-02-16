@@ -122,11 +122,11 @@ await startStrategy({
   apiUrl: process.env.SENTRY_API_URL!,
   apiKey: process.env.SENTRY_AGENT_API_KEY!,
   strategyType: 'ecdysis',
-  markets: ['orca', 'bonk', 'pengu', 'trump', 'molting_sol'],
+  markets: ['orca', 'bonk', 'trump', 'wbtc', 'weth'],
 });
 ```
 
-Choose any combination of the 10 available markets. The strategy runs server-side.
+Choose any combination of the 5 available markets. The strategy runs server-side.
 
 > **Note:** Only the EE-16 (ecdysis) strategy is currently available. Additional strategies will be enabled in future updates.
 

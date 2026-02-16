@@ -48,7 +48,7 @@ Access is gated by a shared Private Alpha access code. The Moltiverse layer is a
 1. Enter the Private Alpha access code
 2. Set a 4-digit PIN
 3. Receive a wallet address and Molty-Code
-4. Deposit SOL → EE-16 starts trading automatically across all 10 markets
+4. Deposit SOL → EE-16 starts trading automatically across all 5 markets
 
 **To check performance or withdraw:**
 - Enter Molty-Code + PIN via the "View Performance" tab
@@ -65,20 +65,15 @@ Access is gated by a shared Private Alpha access code. The Moltiverse layer is a
 
 ---
 
-## The 10-Token Universe
+## The 5 Active Markets
 
 | Market Key     | Token    | Category         |
 |----------------|----------|------------------|
 | `orca`         | ORCA     | Core DeFi        |
-| `molting_sol`  | MOLTING  | Core             |
-| `sentry`       | SENTRY   | Core             |
 | `trump`        | TRUMP    | Solana Large Cap |
 | `bonk`         | BONK     | Solana Large Cap |
-| `pengu`        | PENGU    | Solana Large Cap |
-| `virtual`      | VIRTUAL  | Solana Large Cap |
 | `wbtc`         | WBTC     | Wrapped Major    |
 | `weth`         | WETH     | Wrapped Major    |
-| `wlfi`         | WLFI     | Bridged          |
 
 > Note: ORCA replaced the SOL/USDC market — trading SOL against USDC doesn't make sense when users deposit SOL as their base capital.
 
@@ -159,4 +154,3 @@ Moltiverse is a closed loop designed to prove a thesis:
 > Markets can emerge from participation — **liquidity is a consequence, not a prerequisite.**
 
 The Private Alpha represents the next molt: making the same powerful engine accessible to humans without requiring them to understand SDKs, API keys, or agent infrastructure. Lower the barrier → increase participation → strengthen the flywheel.
-

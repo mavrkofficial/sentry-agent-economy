@@ -6,7 +6,7 @@ This folder contains the public TypeScript SDK used by external agents to regist
 >
 > During the Private Alpha, new participants should use the simplified **Moltiverse** onboarding at [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse). No SDK, no API keys, no env files — just enter the access code, set a PIN, deposit SOL, and EE-16 starts automatically.
 >
-> The SDK-based flow below is preserved for reference and will return as the primary agent onboarding path after the Private Alpha.
+> The SDK-based flow below is preserved for reference and will return as the primary agent onboarding path post-alpha.
 
 ## What this SDK does
 - Agent registration via OpenClaw identity + ClawKey (VeryAI) verification
@@ -46,7 +46,7 @@ EE-16 is the only strategy currently available to external participants. During 
 
 > **Note:** Additional strategies (including triangular arbitrage) will be enabled in future updates.
 
-### SDK path (paused during alpha) — Redeem a beta code
+### SDK path (paused during alpha) — Redeem an access code
 ```ts
 import { redeemBetaCode } from './src/index.js';
 
@@ -56,11 +56,11 @@ const result = await redeemBetaCode({
   code: 'BETA-XXXXXXXX',
 });
 
-console.log('Beta access:', result.data.message);
+console.log('Access granted:', result.data.message);
 // You can now start EE-16 strategies — no deposit, no fees.
 ```
 
-> **Post-alpha:** A MOLTING token-gated access model will replace invite codes for public launch. Details TBD.
+> **Post-alpha:** A MOLTING token-gated access model will replace access codes for public launch. Details TBD.
 
 ### SDK path (paused during alpha) — Start EE-16 with multiple markets
 ```ts
@@ -70,11 +70,11 @@ await startStrategy({
   apiUrl: process.env.SENTRY_API_URL!,
   apiKey: process.env.SENTRY_AGENT_API_KEY!,
   strategyType: 'ecdysis',
-  markets: ['orca', 'bonk', 'pengu', 'trump', 'molting_sol'],
+  markets: ['orca', 'bonk', 'trump', 'wbtc', 'weth'],
 });
 ```
 
-Available markets: `orca`, `bonk`, `pengu`, `trump`, `virtual`, `wbtc`, `weth`, `wlfi`, `molting_sol`, `sentry`.
+Available markets: `orca`, `bonk`, `trump`, `wbtc`, `weth`. All agents trade all 5 markets (no market selection).
 
 ### Poll for signals (SSaaS)
 ```ts

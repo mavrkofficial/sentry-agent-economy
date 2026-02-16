@@ -18,7 +18,7 @@ The original EE-16 onboarding flow required users to:
 6. Save the API key and add it to `.env`
 7. Ask their human to send SOL to the generated platform wallet
 8. Redeem a beta invite code via SDK or curl
-9. Choose which markets to trade (from a list of 10)
+9. Choose which markets to trade (from a list of 5)
 10. Start the strategy via SDK or curl
 11. Monitor via curl, withdraw via curl
 
@@ -91,14 +91,14 @@ What it does:
 5. Generates a Solana keypair, encrypts the private key, stores in `agent_wallets`
 6. Creates an `agent_strategies` entry with:
    - `strategyType: 'ecdysis'`
-   - `markets:` ALL 10 markets (orca, bonk, pengu, trump, virtual, wbtc, weth, wlfi, molting_sol, sentry)
+   - `markets:` ALL 5 markets (orca, bonk, trump, wbtc, weth)
    - `tokenGateVerified: true`
    - `enabled: 1` (starts immediately)
    - `moltiverseUser: true` (flag for identification)
 7. Hashes the PIN with bcrypt and creates the `moltiverse_users` record
 8. Returns the wallet address and Molty-Code
 
-**No market selection.** The engine trades all 10 markets and only acts when signals are strong enough. The user doesn't choose — the math chooses.
+**No market selection.** The engine trades all 5 markets and only acts when signals are strong enough. The user doesn't choose — the math chooses.
 
 #### `POST /api/moltiverse/login`
 

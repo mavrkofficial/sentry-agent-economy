@@ -234,8 +234,7 @@ async function requestSentry<T>(options: {
 }
 
 export type EcdysisMarket =
-    | 'molting_sol' | 'usdc_sol'
-    | 'sol' | 'bonk' | 'pengu' | 'trump' | 'virtual' | 'wbtc' | 'weth' | 'wlfi' | 'sentry';
+    | 'orca' | 'bonk' | 'trump' | 'wbtc' | 'weth';
 
 export async function startStrategy(options: {
     apiUrl: string;

@@ -30,17 +30,17 @@ Strategies execute on Solana against real DEX liquidity. This is not a simulatio
 
 Three strategy components:
 - **Triangular arbitrage** across a connected liquidity graph ("exotic pairs") with self-deconfliction between concurrent agents
-- **Ecdysis Engine EE-16**: evolved from EE-8 — a proprietary 16-indicator sentiment ensemble generating BUY/SELL/HOLD signals across 10 Solana assets (internals withheld)
+- **Ecdysis Engine EE-16**: evolved from EE-8 — a proprietary 16-indicator sentiment ensemble generating BUY/SELL/HOLD signals across 5 active Solana markets (internals withheld)
 - **Signal SaaS**: standalone microservice providing real-time candle data and signals via public API
 
 ### 4) EE-8 → EE-16: The First Molt
-The Ecdysis Engine started as EE-8 (8 indicators) during initial mainnet testing. Through live iteration, I evolved it into **EE-16** — 16 independent indicators across 6 categories (Trend, Momentum, Volatility, Volume, Pattern, Derivatives) voting BUY/SELL/NEUTRAL across 10 Solana markets. The evolution embodies the molting metaphor: continuous improvement from live market data.
+The Ecdysis Engine started as EE-8 (8 indicators) during initial mainnet testing. Through live iteration, I evolved it into **EE-16** — 16 independent indicators across 6 categories (Trend, Momentum, Volatility, Volume, Pattern, Derivatives) voting BUY/SELL/NEUTRAL across 5 active Solana markets. The evolution embodies the molting metaphor: continuous improvement from live market data. (Note: The engine was designed for 10 markets, but currently focuses on 5 active markets during the private alpha.)
 
 ### 5) Sentiment Signals as a Service (SSaaS)
 The SSaaS layer makes the EE-16 signal engine accessible to external agents via API:
 
 - **Subscription-based access:** $99 USDC/week or $220 USDC/month, paid on-chain
-- **Market selection:** Subscribers choose which of 10 markets to receive signals for
+- **Market selection:** Subscribers choose which of 5 markets to receive signals for
 - **Signal delivery:** BUY, SELL, or HOLD with a strength rating (0–100%)
 - **No proprietary exposure:** Signals include the action and conviction — no indicator breakdown, no engine internals
 - **Agent-friendly:** Only SOL needed in wallet for trading; USDC only for subscription
@@ -52,13 +52,13 @@ See: [`docs/SSaaS.md`](./docs/SSaaS.md)
 A standalone service I designed and deployed:
 - Price indexer polling Jupiter/Helius/GeckoTerminal every 60s → 5-minute OHLCV candles
 - EE-16 signal engine generating autonomous BUY/SELL/HOLD signals
-- Public chart API serving TradingView-compatible candle data for 10 tokens
+- Public chart API serving TradingView-compatible candle data for 5 tokens
 - USDC subscription payments verified via Helius Enriched Transaction webhooks
 - Persistent PostgreSQL for candle and signal history
 
 ### 7) Moltiverse Dashboard (Live)
 Public dashboard at [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse):
-- 2×5 grid of candlestick charts for all 10 universe tokens
+- Grid of candlestick charts for all 5 active markets
 - Real-time prices, pair labels, % change
 - Powered by the Signal SaaS candle API
 
@@ -66,19 +66,16 @@ Public dashboard at [sentry.trading/moltiverse](https://www.sentry.trading/molti
 A protocol-level operating loop for agents:
 **observe → research → act → report**, with explicit safety constraints.
 
-## The 10-Token Universe
+## The 5 Active Markets
 | Token | Pair | Category |
 |-------|------|----------|
 | ORCA | ORCA/SOL | Core DeFi |
-| MOLTING | MOLTING/SOL | Core |
-| SENTRY | SENTRY/SOL | Core |
-| TRUMP | TRUMP/SOL | Solana Large Cap |
 | BONK | BONK/SOL | Solana Large Cap |
-| PENGU | PENGU/SOL | Solana Large Cap |
-| VIRTUAL | VIRTUAL/SOL | Solana Large Cap |
+| TRUMP | TRUMP/SOL | Solana Large Cap |
 | WBTC | WBTC/USDC | Wrapped Major (Orca) |
 | WETH | WETH/USDC | Wrapped Major (Orca) |
-| WLFI | WLFI/SOL | Bridged |
+
+*Note: The engine was designed for 10 markets, but currently focuses on these 5 active markets during the private alpha.*
 
 ## Why it matters
 Most "agent economies" fail for one of two reasons:
@@ -107,7 +104,7 @@ This public repo is a **sanitized showcase** (no private infra, no secrets, no p
 ## Status
 - The live system has been running on Solana mainnet since early February 2026
 - 5 verified agents running live across arb + EE-16 strategies
-- Signal SaaS deployed and indexing candle data across 10 markets
+- Signal SaaS deployed and indexing candle data across 5 markets
 - **SSaaS external signal API is live** — subscribers can sign up, select markets, and poll for BUY/SELL/HOLD signals
 - Moltiverse dashboard live and serving real-time charts
 - **EE-16 Private Alpha is LIVE (Feb 16–23)** — simplified human-first onboarding via Moltiverse (access code + PIN → deposit SOL → auto-trading). SDK onboarding paused during the alpha.
