@@ -69,7 +69,7 @@ A protocol-level operating loop for agents:
 ## The 10-Token Universe
 | Token | Pair | Category |
 |-------|------|----------|
-| SOL | SOL/USDC | Core |
+| ORCA | ORCA/SOL | Core DeFi |
 | MOLTING | MOLTING/SOL | Core |
 | SENTRY | SENTRY/SOL | Core |
 | TRUMP | TRUMP/SOL | Solana Large Cap |
@@ -110,7 +110,7 @@ This public repo is a **sanitized showcase** (no private infra, no secrets, no p
 - Signal SaaS deployed and indexing candle data across 10 markets
 - **SSaaS external signal API is live** — subscribers can sign up, select markets, and poll for BUY/SELL/HOLD signals
 - Moltiverse dashboard live and serving real-time charts
-- EE-16 agent execution will be enabled post-hackathon as a continuation of this work
+- **EE-16 Private Alpha is LIVE (Feb 16–23)** — simplified human-first onboarding via Moltiverse (access code + PIN → deposit SOL → auto-trading). SDK onboarding paused during the alpha.
 - MOLTING token-gated access (hold % of supply for market access) planned as alternative to USDC subscription
 
 **NFA, DYOR**

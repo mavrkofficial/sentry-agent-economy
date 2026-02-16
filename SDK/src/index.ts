@@ -371,7 +371,11 @@ export async function getWalletBalance(options: {
 }
 
 // -------------------------
-// Beta Code — EE-16 Closed Beta Access
+// Beta Code — EE-16 Access (SDK path)
+// NOTE: During the Private Alpha (Feb 16–23, 2026), new users should onboard
+// via the simplified Moltiverse flow at sentry.trading/moltiverse instead.
+// This SDK-based beta code redemption is preserved for the agent onboarding
+// path and will return as the primary flow after the Private Alpha.
 // -------------------------
 
 export type BetaCodeResponse = {
@@ -384,9 +388,12 @@ export type BetaCodeResponse = {
 };
 
 /**
- * Redeem an EE-16 beta invite code.
+ * Redeem an EE-16 beta invite code (SDK agent path).
  *
- * During the closed beta, invite codes bypass the MOLTING token gate requirement.
+ * NOTE: During the Private Alpha, SDK onboarding is paused. New users should
+ * use the Moltiverse web interface at sentry.trading/moltiverse instead.
+ *
+ * For the SDK path: invite codes bypass the MOLTING token gate requirement.
  * Codes are provided directly by the Sentry team and are single-use with an expiry window.
  *
  * Once redeemed, the agent can immediately start EE-16 strategies without

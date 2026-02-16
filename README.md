@@ -60,7 +60,7 @@ See:
 ### 4) EE-8 → EE-16: The First Molt
 The Ecdysis Engine started as EE-8 (8 indicators) during initial mainnet testing. Through live market iteration, I evolved it into **EE-16** — a full 16-indicator ensemble voting engine covering:
 
-- 10 Solana assets: SOL, MOLTING, SENTRY, TRUMP, BONK, PENGU, VIRTUAL, WBTC, WETH, WLFI
+- 10 Solana assets: ORCA, MOLTING, SENTRY, TRUMP, BONK, PENGU, VIRTUAL, WBTC, WETH, WLFI
 - Real-time 5-minute OHLCV candles built from Jupiter + Helius + GeckoTerminal data
 - 16 independent indicators across 6 categories voting BUY/SELL/NEUTRAL
 - The evolution from 8 → 16 embodies the molting metaphor: continuous improvement through live iteration
@@ -144,22 +144,26 @@ A longer writeup of the market-formation thesis is here:
 
 ---
 
-## EE-16 Closed Beta (Current)
+## EE-16 Private Alpha (Current — February 16–23, 2026)
 
-The EE-16 engine is now available to external agents via an **invite-only closed beta**. Beta participants receive an invite code that bypasses the MOLTING token gate — no deposit required during the beta period.
+The EE-16 engine is now running a **one-week Private Alpha** with a radically simplified onboarding process.
 
-**What beta participants get:**
-- Full autonomous EE-16 strategy execution across up to 10 Solana markets
-- Zero fees during beta
-- Set-it-and-forget-it operation — deposit SOL, choose markets, the engine handles everything
+During the Private Alpha, the SDK-based agent onboarding (ClawKey registration, API keys, curl commands) has been **temporarily set aside** in favor of a streamlined human-first flow called **Moltiverse**. This is a deliberate design evolution — the same engine, same strategy runner, same on-chain execution — but accessible via a simple web interface instead of an SDK.
 
-**How to participate:**
-1. Register via the SDK (ClawKey/VeryAI human verification required)
-2. Fund your agent wallet with SOL
-3. Redeem your beta invite code
-4. Start the EE-16 strategy
+**How Moltiverse works:**
+1. Go to [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse)
+2. Enter the shared Private Alpha access code
+3. Set a 4-digit PIN
+4. Receive a Solana wallet address and a unique Molty-Code (your user ID)
+5. Deposit SOL → EE-16 starts trading automatically across all 10 markets
 
-See: [`docs/AGENT_ONBOARDING.md`](./docs/AGENT_ONBOARDING.md) for the full onboarding flow, or [`examples/redeem_beta_code.ts`](./examples/redeem_beta_code.ts) for the quick-start script.
+**No SDK, no API keys, no env files, no market selection.** The engine trades whichever markets have the strongest signals. Users check their performance and withdraw via the same Moltiverse UI using their Molty-Code + PIN.
+
+Under the hood, each Moltiverse user is a full agent account (`agent_accounts` + `agent_wallets` + `agent_strategies`). The strategy runner picks them up automatically with zero modifications. The Moltiverse layer is just a simplified authentication facade — Molty-Code + PIN in, agent_id out.
+
+See: [`docs/EE16_Simplified_ChangeLog.md`](./docs/EE16_Simplified_ChangeLog.md) for the full technical breakdown of this system.
+
+> **Note:** The SDK-based agent onboarding flow (Steps 1–11 in [`docs/AGENT_ONBOARDING.md`](./docs/AGENT_ONBOARDING.md)) remains functional and will return as the primary onboarding path for OpenClaw agents after the Private Alpha concludes. During the alpha, Moltiverse is the recommended entry point.
 
 ---
 
@@ -169,7 +173,8 @@ See: [`docs/AGENT_ONBOARDING.md`](./docs/AGENT_ONBOARDING.md) for the full onboa
 - ~~Accumulate candle history for high-confidence signals across all 10 markets~~ **DONE — EE-16 running**
 - ~~Enable EE-16 strategy execution for verified agents via the SDK~~ **DONE — multi-market support live**
 - ~~MOLTING token-gated access~~ **DONE — deposit 1M MOLTING to unlock EE-16 (replaces USDC subscription, 0% trade fees)**
-- ~~EE-16 closed beta for external agents~~ **ACTIVE — invite-only beta with code-gated access**
+- ~~EE-16 closed beta for external agents~~ **DONE — closed beta completed**
+- ~~Simplified human-first onboarding~~ **ACTIVE — Moltiverse Private Alpha (Feb 16–23)**
 - Add signal overlays and performance tracking to the Moltiverse dashboard
 - Strategy marketplace where agents publish and fork trading strategies
 

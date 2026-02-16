@@ -14,12 +14,15 @@ This is a **sanitized** technical overview of the system built for the Colosseum
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         HUMAN OPERATOR SURFACES                     │
 │                                                                     │
-│   ┌──────────────────┐    ┌──────────────────┐    ┌──────────────┐  │
-│   │  Sentry PWA       │    │  Telegram UX      │    │  ClawKey     │  │
-│   │  (dashboard)      │    │  (commands/menus) │    │  verification│  │
-│   └────────┬─────────┘    └────────┬──────────┘    └──────┬───────┘  │
-│            │                        │                     │          │
-└────────────┼────────────────────────┼─────────────────────┼──────────┘
+│   ┌──────────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
+│   │  Sentry PWA       │  │  Telegram UX  │  │  Moltiverse UI      │  │
+│   │  (dashboard)      │  │  (commands)   │  │  (Private Alpha)    │  │
+│   │                   │  │              │  │  register / login /  │  │
+│   │                   │  │              │  │  withdraw via        │  │
+│   │                   │  │              │  │  Molty-Code + PIN    │  │
+│   └────────┬─────────┘  └──────┬───────┘  └──────────┬───────────┘  │
+│            │                    │                      │             │
+└────────────┼────────────────────┼──────────────────────┼────────────┘
              │                        │                     │
              ▼                        ▼                     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -87,7 +90,9 @@ Public SDK (this repo) ────────────► calls into execut
 
 ---
 
-## 3) Verified agent onboarding (identity constraint)
+## 3) Participant onboarding (two paths)
+
+### Path A: Verified agent onboarding (SDK)
 
 Agents register using:
 - **OpenClaw identity** (device identity file)
@@ -95,7 +100,21 @@ Agents register using:
 
 This creates a hard constraint against unlimited sybil agents.
 
+> **Note:** SDK onboarding is paused during the EE-16 Private Alpha (Feb 16–23, 2026). See Path B.
+
 See: `docs/AGENT_ONBOARDING.md`
+
+### Path B: Moltiverse simplified onboarding (Private Alpha)
+
+Human users onboard via [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse):
+1. Enter a shared Private Alpha access code
+2. Set a 4-digit PIN
+3. Receive a Solana wallet address and a unique Molty-Code (user ID)
+4. Deposit SOL → EE-16 starts trading automatically across all 10 markets
+
+Under the hood, each Moltiverse user maps to a full `agent_accounts` + `agent_wallets` + `agent_strategies` entry. The `moltiverse_users` table acts as an authentication facade — bridging Molty-Code/PIN credentials to the existing agent system. The strategy runner requires zero modifications.
+
+See: `docs/EE16_Simplified_ChangeLog.md`
 
 ---
 

@@ -61,14 +61,23 @@ SSaaS is the external-facing API layer that makes EE-16 signals available to thi
 - **No trade fees:** 0% on all EE-16 trades — the MOLTING deposit is the only cost
 - **Agent-friendly design:** Cursor-based polling, strength ratings, and signal expiry
 
-### How external agents use it
+### How participants use it
+
+**During the Private Alpha (Feb 16–23, 2026):**
+1. Visit [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse)
+2. Enter the Private Alpha access code and set a 4-digit PIN
+3. Deposit SOL to the generated wallet address
+4. EE-16 trades automatically across all 10 markets based on signal strength
+5. Check performance and withdraw via Molty-Code + PIN
+
+**SDK path (paused during alpha):**
 1. Register via the SDK with OpenClaw + ClawKey verification
 2. Market-buy 1,000,000 MOLTING and deposit to the Sentry fees wallet
 3. Verify via `checkTokenGate()` — once verified, access is permanent
 4. Start EE-16 strategies with `startStrategy()`, selecting any combination of 10 markets
 5. Trades execute server-side: buys on bullish consensus, full exit on bearish signals
 
-Agents only need **SOL** in their wallet — no USDC, no recurring subscription.
+Participants only need **SOL** in their wallet — no USDC, no recurring subscription.
 
 See: [`docs/SSaaS.md`](./SSaaS.md) for the full integration guide.
 

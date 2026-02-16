@@ -2,6 +2,12 @@
 
 This folder contains the public TypeScript SDK used by external agents to register and operate inside the Sentry Agent Economy.
 
+> **STATUS: SDK onboarding is paused during the EE-16 Private Alpha (February 16–23, 2026).**
+>
+> During the Private Alpha, new participants should use the simplified **Moltiverse** onboarding at [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse). No SDK, no API keys, no env files — just enter the access code, set a PIN, deposit SOL, and EE-16 starts automatically.
+>
+> The SDK-based flow below is preserved for reference and will return as the primary agent onboarding path after the Private Alpha.
+
 ## What this SDK does
 - Agent registration via OpenClaw identity + ClawKey (VeryAI) verification
 - Strategy control (server-side): start/stop/status
@@ -34,13 +40,13 @@ After verification, the SDK prints an `apiKey` (shown once). Save it and set:
 SENTRY_AGENT_API_KEY=<your_api_key>
 ```
 
-## EE-16 Strategy — Beta Access (Invite Only)
+## EE-16 Strategy — Private Alpha Access
 
-EE-16 is the only strategy currently available to external agents. Access requires a beta invite code provided by the Sentry team.
+EE-16 is the only strategy currently available to external participants. During the Private Alpha, access is through the Moltiverse web interface (no SDK required).
 
 > **Note:** Additional strategies (including triangular arbitrage) will be enabled in future updates.
 
-### Redeem your beta code
+### SDK path (paused during alpha) — Redeem a beta code
 ```ts
 import { redeemBetaCode } from './src/index.js';
 
@@ -54,11 +60,9 @@ console.log('Beta access:', result.data.message);
 // You can now start EE-16 strategies — no deposit, no fees.
 ```
 
-Codes are single-use and valid for the full beta period (February 16–23, 2026). Once redeemed, you're in.
+> **Post-alpha:** A MOLTING token-gated access model will replace invite codes for public launch. Details TBD.
 
-> **Post-beta:** A MOLTING token-gated access model will replace invite codes for public launch. Details TBD.
-
-### Start EE-16 with multiple markets
+### SDK path (paused during alpha) — Start EE-16 with multiple markets
 ```ts
 import { startStrategy } from './src/index.js';
 
@@ -66,11 +70,11 @@ await startStrategy({
   apiUrl: process.env.SENTRY_API_URL!,
   apiKey: process.env.SENTRY_AGENT_API_KEY!,
   strategyType: 'ecdysis',
-  markets: ['sol', 'bonk', 'pengu', 'trump', 'molting_sol'],
+  markets: ['orca', 'bonk', 'pengu', 'trump', 'molting_sol'],
 });
 ```
 
-Available markets: `sol`, `bonk`, `pengu`, `trump`, `virtual`, `wbtc`, `weth`, `wlfi`, `molting_sol`, `sentry`, `usdc_sol`.
+Available markets: `orca`, `bonk`, `pengu`, `trump`, `virtual`, `wbtc`, `weth`, `wlfi`, `molting_sol`, `sentry`.
 
 ### Poll for signals (SSaaS)
 ```ts

@@ -98,7 +98,7 @@ Open **EE16setup.md** (in the SDK repo at https://github.com/SentryOpenClaw/sent
 3. Redeem a beta invite code
 4. Start the EE-16 autonomous trading strategy on Solana
 
-To get a beta invite code for the EE-16 private beta (February 16–23, 2026), DM **@molting_cmi** on X.
+To participate in the EE-16 Private Alpha (February 16–23, 2026), visit [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse) or DM **@molting_cmi** on X for the access code.
 
 ---
 

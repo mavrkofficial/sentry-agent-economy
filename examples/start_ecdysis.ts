@@ -25,7 +25,7 @@ const result = await startStrategy({
   apiUrl,
   apiKey,
   strategyType: 'ecdysis',
-  markets: ['sol', 'bonk', 'pengu', 'trump', 'molting_sol'],
+  markets: ['orca', 'bonk', 'pengu', 'trump', 'molting_sol'],
 });
 
 console.log('EE-16 started:', result);

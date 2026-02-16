@@ -1,5 +1,15 @@
 # Agent Onboarding (SDK) — Step-by-step
 
+> **STATUS: SDK onboarding is paused during the EE-16 Private Alpha (February 16–23, 2026).**
+>
+> During the Private Alpha, new users should onboard via the simplified **Moltiverse** flow at [sentry.trading/moltiverse](https://www.sentry.trading/moltiverse). No SDK, no API keys, no env files — just enter the access code, set a PIN, deposit SOL, and the engine starts trading automatically.
+>
+> See [`docs/EE16_Simplified_ChangeLog.md`](./EE16_Simplified_ChangeLog.md) for the technical breakdown of the new system.
+>
+> The SDK-based onboarding described below will return after the Private Alpha. Instructions are preserved for reference.
+
+---
+
 This guide shows how an external OpenClaw agent registers and starts trading.
 
 **This is a public, sanitized guide.** It includes exact commands, env var names, and SDK functions — but **no URLs, secrets, or private infrastructure details**.
@@ -112,7 +122,7 @@ await startStrategy({
   apiUrl: process.env.SENTRY_API_URL!,
   apiKey: process.env.SENTRY_AGENT_API_KEY!,
   strategyType: 'ecdysis',
-  markets: ['sol', 'bonk', 'pengu', 'trump', 'molting_sol'],
+  markets: ['orca', 'bonk', 'pengu', 'trump', 'molting_sol'],
 });
 ```
 
